@@ -41,6 +41,10 @@ export class BookmarkRepository extends BaseRepository<BookmarkDocument> {
     }
 
     // ===== READ METHODS =====
+    public async findBookmarkByOverviewId(overview_id: string): Promise<BookmarkDocument> {
+        return this.findDocument({ overview_id }, ['_id', 'created_at'], true);
+    }
+
     public async findBookmarks(query: FilterQuery<Bookmark>, limit: number, last_id: string, fields: Array<keyof Bookmark>, sort: Record<string, SortOrder>): Promise<BookmarkDocument[]> {
         return this.findDocuments(query, limit, fields, sort, true);
     }
