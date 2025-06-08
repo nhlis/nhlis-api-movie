@@ -1,11 +1,11 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
 
 import { BookmarkRepository } from './bookmark.repository';
 import { Bookmark, BookmarkDocument } from './bookmark.schema';
 import { ProfileRepository } from '../profile/profile.repository';
 import { OverviewRepository } from '../movies/overview/overview.repository';
-import { EMovieSort, IOverviewRespone } from '../../common';
+import { EMovieSort, ESort, IOverviewRespone } from '../../common';
 
 @Injectable()
 export class BookmarkService {
@@ -34,9 +34,30 @@ export class BookmarkService {
 
     public async handleGetBookmarks(profile_id: string, limit: number, last_id: string, created_at: EMovieSort): Promise<{ bookmarks: IOverviewRespone[]; hasMore: boolean }> {
         try {
-            const queryBuilder: FilterQuery<Bookmark> = { profile_id };
+            const queryBuilder: FilterQuery<BookmarkDocument> = {
+                profile_id,
+            };
 
-            if (last_id) queryBuilder._id = created_at === EMovieSort.DESC ? { $gt: last_id } : { $lt: last_id };
+            const sort: Record<string, SortOrder> = {};
+            const sortField: keyof BookmarkDocument = 'created_at';
+            const sortDirection: SortOrder = created_at ?? EMovieSort.DESC;
+
+            sort[sortField] = sortDirection;
+            sort._id = sortDirection;
+
+            if (last_id) {
+                const lastBookmark = await this.bookmarkRepository.findBookmarkByOverviewId(last_id);
+
+                if (lastBookmark) {
+                    queryBuilder.$or = [
+                        { [sortField]: { [sortDirection === 1 ? '$gt' : '$lt']: lastBookmark[sortField] } },
+                        {
+                            [sortField]: lastBookmark[sortField],
+                            _id: { [sortDirection === 1 ? '$gt' : '$lt']: lastBookmark._id },
+                        },
+                    ];
+                }
+            }
 
             const limitPlusOne = limit + 1;
 
