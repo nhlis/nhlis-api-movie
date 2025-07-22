@@ -73,9 +73,23 @@ export class OverviewService {
 
         try {
             const [logo, poster, backdrop] = await Promise.all([
-                this.driveService.UploadImage(files.logoSrc, payload.original_title, undefined, undefined, undefined, this.idFolderMovie),
-                this.driveService.UploadImage(files.posterSrc, payload.original_title, undefined, undefined, '2:3', this.idFolderMovie),
-                this.driveService.UploadImage(files.backdropSrc, payload.original_title, undefined, undefined, '16:9', this.idFolderMovie),
+                this.driveService.UploadImage({
+                    fileImage: files.logoSrc,
+                    nameImage: payload.original_title,
+                    width: undefined,
+                    height: undefined,
+                    aspectRatio: undefined,
+                    idFolder: this.idFolderMovie,
+                }),
+                this.driveService.UploadImage({ fileImage: files.posterSrc, nameImage: payload.original_title, width: undefined, height: undefined, aspectRatio: '2:3', idFolder: this.idFolderMovie }),
+                this.driveService.UploadImage({
+                    fileImage: files.backdropSrc,
+                    nameImage: payload.original_title,
+                    width: undefined,
+                    height: undefined,
+                    aspectRatio: '20:9',
+                    idFolder: this.idFolderMovie,
+                }),
             ]);
 
             return this.overviewRepository.createOverview(
@@ -124,9 +138,36 @@ export class OverviewService {
             const oldOverview = await this.overviewRepository.findOverviewById(overview_id, ['_id', 'original_title', 'logo', 'poster', 'backdrop'], true);
 
             const uploadPromises = [
-                files.logoSrc ? this.driveService.UploadImage(files.logoSrc, oldOverview.original_title, undefined, undefined, undefined, this.idFolderMovie) : Promise.resolve(undefined),
-                files.posterSrc ? this.driveService.UploadImage(files.posterSrc, oldOverview.original_title, undefined, undefined, '2:3', this.idFolderMovie) : Promise.resolve(undefined),
-                files.backdropSrc ? this.driveService.UploadImage(files.backdropSrc, oldOverview.original_title, undefined, undefined, '16:9', this.idFolderMovie) : Promise.resolve(undefined),
+                files.logoSrc
+                    ? this.driveService.UploadImage({
+                          fileImage: files.logoSrc,
+                          nameImage: oldOverview.original_title,
+                          width: undefined,
+                          height: undefined,
+                          aspectRatio: undefined,
+                          idFolder: this.idFolderMovie,
+                      })
+                    : Promise.resolve(undefined),
+                files.posterSrc
+                    ? this.driveService.UploadImage({
+                          fileImage: files.posterSrc,
+                          nameImage: oldOverview.original_title,
+                          width: undefined,
+                          height: undefined,
+                          aspectRatio: '2:3',
+                          idFolder: this.idFolderMovie,
+                      })
+                    : Promise.resolve(undefined),
+                files.backdropSrc
+                    ? this.driveService.UploadImage({
+                          fileImage: files.backdropSrc,
+                          nameImage: oldOverview.original_title,
+                          width: undefined,
+                          height: undefined,
+                          aspectRatio: '20:9',
+                          idFolder: this.idFolderMovie,
+                      })
+                    : Promise.resolve(undefined),
             ];
 
             [logo, poster, backdrop] = await Promise.all(uploadPromises);

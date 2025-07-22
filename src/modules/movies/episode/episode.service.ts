@@ -56,7 +56,7 @@ export class EpisodeService {
                 if (!season) throw new NotFoundException({ message: `Season not found` });
                 if (episode) throw new ConflictException({ message: `The set ${payload.episode_number} already exists.` });
 
-                img = await this.driveService.UploadImage(files.imgSrc, payload.title, 480, 270, '16:9', this.idFolderEpisodes);
+                img = await this.driveService.UploadImage({ fileImage: files.imgSrc, nameImage: payload.title, width: 480, height: 270, aspectRatio: '16:9', idFolder: this.idFolderEpisodes });
 
                 const newEpisode = await this.episodeRepository.createEpisode(
                     {
@@ -108,7 +108,8 @@ export class EpisodeService {
 
             if (!oldEpisode) throw new NotFoundException({ message: '' });
 
-            if (files.imgSrc) img = await this.driveService.UploadImage(files.imgSrc, oldEpisode.title, 480, 270, '16:9', this.idFolderEpisodes);
+            if (files.imgSrc)
+                img = await this.driveService.UploadImage({ fileImage: files.imgSrc, nameImage: oldEpisode.title, width: 480, height: 270, aspectRatio: '16:9', idFolder: this.idFolderEpisodes });
 
             const newEpisode = await this.episodeRepository.updateEpisodeById(
                 episode_id,

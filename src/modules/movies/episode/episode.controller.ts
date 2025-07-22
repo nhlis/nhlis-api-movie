@@ -84,7 +84,7 @@ export class EpisodeController {
                 validators: [
                     new FileSizeValidator({
                         multiple: false,
-                        maxSizeBytes: 5 * 1024 * 1024,
+                        maxSizeBytes: 20 * 1024 * 1024,
                     }),
                     new FileTypeValidator({
                         multiple: false,
@@ -125,7 +125,7 @@ export class EpisodeController {
                 validators: [
                     new FileSizeValidator({
                         multiple: false,
-                        maxSizeBytes: 5 * 1024 * 1024,
+                        maxSizeBytes: 20 * 1024 * 1024,
                     }),
                     new FileTypeValidator({
                         multiple: false,
