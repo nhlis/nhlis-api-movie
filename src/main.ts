@@ -51,15 +51,18 @@ async function Bootstrap() {
 
     app.enableCors({
         origin: (origin, callback) => {
-            // Nếu request không có Origin (server-side request), cho phép luôn
+            // Cho phép request không có origin (e.g. server-to-server)
             if (!origin) return callback(null, true);
 
-            // Kiểm tra nếu origin nằm trong danh sách cho phép
-            if (allowedOriginsArr.includes(origin)) {
+            const isExplicitlyAllowed = allowedOriginsArr.includes(origin);
+
+            const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin);
+            const isLocalNetwork = /^http:\/\/192\.168\.1\.\d+(:\d+)?$/.test(origin);
+
+            if (isExplicitlyAllowed || isLocalhost || isLocalNetwork) {
                 return callback(null, true);
             }
 
-            // Nếu không khớp, từ chối request
             return callback(new Error('Not allowed by CORS'));
         },
         credentials: true,

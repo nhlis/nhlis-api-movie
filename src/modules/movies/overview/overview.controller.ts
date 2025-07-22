@@ -161,7 +161,7 @@ export class OverviewController {
         @Body() body: PostOverviewDto,
         @UploadedFiles(
             new ParseFilePipe({
-                validators: [new FileSizeValidator({ multiple: true, maxSizeBytes: 20 * 1024 * 1024 }), new FileTypeValidator({ multiple: true, filetype: /^image\/(jpeg|png)$/i })],
+                validators: [new FileSizeValidator({ multiple: true, maxSizeBytes: 30 * 1024 * 1024 }), new FileTypeValidator({ multiple: true, filetype: /^image\/(jpeg|png)$/i })],
             }),
         )
         files: { logoSrc: Express.Multer.File[]; posterSrc: Express.Multer.File[]; backdropSrc: Express.Multer.File[] },
@@ -200,7 +200,7 @@ export class OverviewController {
         @Body() body: PatchOverviewDto,
         @UploadedFiles(
             new ParseFilePipe({
-                validators: [new FileSizeValidator({ multiple: true, maxSizeBytes: 20 * 1024 * 1024 }), new FileTypeValidator({ multiple: true, filetype: /^image\/(jpeg|png)$/i })],
+                validators: [new FileSizeValidator({ multiple: true, maxSizeBytes: 30 * 1024 * 1024 }), new FileTypeValidator({ multiple: true, filetype: /^image\/(jpeg|png)$/i })],
                 fileIsRequired: false,
             }),
         )

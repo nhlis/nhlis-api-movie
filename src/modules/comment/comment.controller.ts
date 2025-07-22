@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Post, Body, Param, Get, Query, Delete, Patch, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, UseGuards, Post, Body, Param, Get, Query, Delete, Patch, HttpStatus, HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { AuthGuard, OptionalAuthGuard, ICommentRespone, IUser, User } from '../../common';
 
@@ -7,6 +7,7 @@ import { PostCommentDto } from './dtos/post-comment.dto';
 import { QueryCommentDto } from './dtos/query-comment.dto';
 import { CommentDocument } from './comment.schema';
 import { PatchCommentDto } from './dtos/patch-comment.dto';
+import { SanitizeTextPipe } from 'src/common/pipes/sanitize-text.pipe';
 
 @Controller('comments')
 export class CommentController {
@@ -16,6 +17,7 @@ export class CommentController {
 
     @UseGuards(AuthGuard)
     @Post()
+    @UsePipes(ValidationPipe, SanitizeTextPipe)
     @HttpCode(HttpStatus.CREATED)
     async postComment(@User() user: IUser, @Body() body: PostCommentDto): Promise<{ comment: Partial<ICommentRespone> }> {
         const comment = await this.commentService.handlePostComment({
@@ -32,6 +34,7 @@ export class CommentController {
 
     @UseGuards(AuthGuard)
     @Patch(':comment_id')
+    @UsePipes(ValidationPipe, SanitizeTextPipe)
     @HttpCode(HttpStatus.OK)
     async patchComment(@Param('comment_id') comment_id: string, @User() user: IUser, @Body() body: PatchCommentDto): Promise<{ comment: Partial<ICommentRespone> }> {
         const comment = await this.commentService.handlePatchComment(comment_id, user.sub, body.text);
